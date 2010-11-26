@@ -1,0 +1,62 @@
+\documentclass[12pt, a4paper]{exam}
+\usepackage[OT1]{fontenc}
+\usepackage{Sweave}
+\SweaveOpts{echo=FALSE}
+\usepackage{hyperref}            % for links (only use on final printed version
+\hypersetup{pdfpagelayout=SinglePage} % http://www.tug.org/applications/hyperref/ftp/doc/manual.html
+\setkeys{Gin}{width=0.8\textwidth}
+\pagestyle{headandfoot} % every page has a header and footer
+\header{}{Sample Multiple Choice Questions}{}
+\footer{}{Page \thepage\ of \numpages}{}
+
+\begin{document}
+<<prepare_data>>=
+items <- read.csv("data/items.csv", stringsAsFactors = FALSE)
+
+writeQuestion <- function(x){
+	c("\\filbreak",
+			paste("\\question\n", x["itemText"]),
+			"\\begin{choices}",
+			paste("\\choice", x["optionA"]),
+			paste("\\choice", x["optionB"]),
+			paste("\\choice", x["optionC"]), 
+			paste("\\choice", x["optionD"]), 
+			"\\vspace{10 mm}",
+			"\\end{choices}\n\n")
+}
+
+itemText <- apply(items, 1, function(X)  writeQuestion(x = X))
+
+answers <- paste(items$item, "=",
+		LETTERS[as.numeric(items$correctAnswer)],
+		sep ="")
+answersText <- paste(answers, collapse = "; ")
+@
+
+
+\title{Sweave Example: Multiple Choice Questions (MCQ)}
+\author{Jeromy Anglim}
+
+
+
+\maketitle
+\begin{abstract}
+This PDF is an example of using Sweave to format a set of multiple choice questions.
+Copies and explanation of the source code used to generate 
+ the test can be found found at
+ \url{http://jeromyanglim.blogspot.com/}.
+\end{abstract}
+
+
+\begin{questions}
+<<print_items, results=tex>>=
+cat(itemText, sep = "\n")
+@
+\newpage
+\section*{Answers}
+<<print_answers, results=tex>>=
+cat(answersText) 
+@
+
+\end{questions}
+\end{document} 
